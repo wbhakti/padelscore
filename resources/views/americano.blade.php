@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Match {{ $tournament->name ?? 'Padel Americano Match' }}</title>
+    <title>Cubiq Padel - Match {{ $tournament->name ?? 'Padel Match' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<style>
@@ -346,17 +346,13 @@
             }
         });
 
-        document.getElementById('main-form').addEventListener('submit', function(e) {
-            const maxPlayers = parseInt(document.getElementById('max-players').value, 10);
-
-            if (localPlayers.length < 4) {
-                e.preventDefault();
-                alert('Minimal harus ada 4 pemain!');
-            } else if (localPlayers.length !== maxPlayers) {
-                e.preventDefault();
-                alert(`Jumlah pemain terdaftar (${localPlayers.length}) harus sama persis dengan kuota maksimal yang dipilih (${maxPlayers})!`);
-            }
-        });
+		document.getElementById('main-form').addEventListener('submit', function(e) {
+			const maxPlayers = parseInt(document.getElementById('max-players').value, 10);
+			if (localPlayers.length !== maxPlayers) {
+				e.preventDefault();
+				alert(`Minimal harus ada ${maxPlayers} pemain!`);
+			}
+		});
     </script>
 </body>
 </html>
