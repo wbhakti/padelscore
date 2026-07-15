@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Match Padel</title>
+    <title>Cubiq Padel - Create Room</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -25,7 +25,7 @@
                     <i class="fa-solid fa-table-tennis-paddle-ball text-3xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-                    Padel<span class="text-emerald-500">Bagus</span>
+                    CUBIQ PADEL
                 </h1>
                 <p class="text-sm text-slate-500">
                     Buat ruang match baru untuk melanjutkan kompetisi padel.

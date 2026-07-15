@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Cubiq Padel - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,7 +14,7 @@
             <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto text-xl shadow-sm">
                 <i class="fa-solid fa-table-tennis-paddle-ball"></i>
             </div>
-            <h2 class="text-2xl font-black tracking-tight text-slate-900 mt-3">Selamat Datang</h2>
+            <h2 class="text-2xl font-black tracking-tight text-slate-900 mt-3">CUBIQ PADEL</h2>
             <p class="text-xs sm:text-sm text-slate-500">Silakan login untuk mengelola room pertandingan.</p>
         </div>
 
