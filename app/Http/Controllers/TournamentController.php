@@ -34,66 +34,113 @@ class TournamentController extends Controller
 	
 	//proses buat turnament
     public function start(Request $request, $code)
-    {
-        $tournament = DB::table('tournaments')->where('code', $code)->first();
-        if (!$tournament) abort(404);
+	{
+		$tournament = DB::table('tournaments')->where('code', $code)->first();
+		if (!$tournament) abort(404);
 
-        $request->validate([
-            'players' => 'required|array|min:4'
-        ]);
+		$request->validate([
+			'players' => 'required|array|min:4',
+			'courts' => 'required|integer|min:1'
+		]);
 
-        $playerNames = $request->players;
-        $count = count($playerNames);
+		$playerNames = $request->players;
+		$count = count($playerNames);
+		$totalCourts = (int) $request->courts;
 
-        if ($count % 4 !== 0) {
-            return redirect()->back()->with('error', 'Jumlah pemain harus kelipatan 4.');
-        }
+		if ($count < 4) {
+			return redirect()->back()->with('error', 'Jumlah pemain minimal harus 4 orang.');
+		}
 
-        // HAPUS data turnamen double
-        MatchModel::where('tournament_id', $tournament->id)->delete();
-        Player::where('tournament_id', $tournament->id)->delete();
+		// HAPUS data turnamen sebelumnya jika generate ulang
+		MatchModel::where('tournament_id', $tournament->id)->delete();
+		Player::where('tournament_id', $tournament->id)->delete();
 
-        DB::transaction(function () use ($playerNames, $count, $tournament) {
-            $insertedPlayers = [];
-            foreach ($playerNames as $name) {
-                $insertedPlayers[] = Player::create([
-                    'tournament_id' => $tournament->id,
-                    'name' => $name,
-                    'points' => 0
-                ]);
-            }
+		DB::transaction(function () use ($playerNames, $count, $tournament, $totalCourts) {
+			$insertedPlayers = [];
+			foreach ($playerNames as $name) {
+				$insertedPlayers[] = Player::create([
+					'tournament_id' => $tournament->id,
+					'name' => $name,
+					'points' => 0
+				]);
+			}
 
-			//logika americano
-            $playerIds = collect($insertedPlayers)->pluck('id')->toArray();
-			$baseRounds = $count - 1;
-			$matchesPerRound = $count / 4;
-			$globalRound = 1;
+			$playerIds = collect($insertedPlayers)->pluck('id')->toArray();
+			
+			if ($count % 4 === 0){
+				//amerikano existing
+				$baseRounds = $count - 1;
+				$matchesPerRound = $count / 4;
+				$globalRound = 1;
+				for ($r = 0; $r < $baseRounds; $r++) {
+					$availableCourts = [];
+					for ($m = 0; $m < $matchesPerRound; $m++) {
+						$availableCourts[] = ($m % $totalCourts) + 1;
+					}
+					shuffle($availableCourts);
+					for ($m = 0; $m < $matchesPerRound; $m++) {
+						$p1 = $playerIds[($r + $m) % ($count - 1)];
+						$p2 = $playerIds[($r + $m + 1) % ($count - 1)];
+						$p3 = $playerIds[($r + $m + 2) % ($count - 1)];
+						$p4 = $playerIds[$count - 1]; 
+						MatchModel::create([
+							'tournament_id' => $tournament->id,
+							'round' => $globalRound,
+							'court' => $availableCourts[$m],
+							'player_a1_id' => $p1,
+							'player_a2_id' => $p4,
+							'player_b1_id' => $p2,
+							'player_b2_id' => $p3,
+							'is_finished' => 0
+						]);
+						$globalRound++;
+					}
+				}
+			} else {
+				$rounds = $count;
+				$matchesPerRound = (int) floor($count / 4);
+				$globalRound = 1;
 
-			for ($r = 0; $r < $baseRounds; $r++) {
-				for ($m = 0; $m < $matchesPerRound; $m++) {
-					$p1 = $playerIds[($r + $m) % ($count - 1)];
-					$p2 = $playerIds[($r + $m + 1) % ($count - 1)];
-					$p3 = $playerIds[($r + $m + 2) % ($count - 1)];
-					$p4 = $playerIds[$count - 1]; 
+				for ($r = 0; $r < $rounds; $r++) {
+					$rotatedPlayers = array_merge(
+						array_slice($playerIds, $r),
+						array_slice($playerIds, 0, $r)
+					);
 
-					MatchModel::create([
-						'tournament_id' => $tournament->id,
-						'round' => $globalRound,
-						'court' => 1,
-						'player_a1_id' => $p1,
-						'player_a2_id' => $p4,
-						'player_b1_id' => $p2,
-						'player_b2_id' => $p3,
-						'is_finished' => 0
-					]);
+					// Mengatur pembagian lapangan
+					$availableCourts = [];
+					for ($m = 0; $m < $matchesPerRound; $m++) {
+						$availableCourts[] = ($m % $totalCourts) + 1;
+					}
+					shuffle($availableCourts);
 
-					$globalRound++;
+					for ($m = 0; $m < $matchesPerRound; $m++) {
+						$offset = $m * 4;
+						
+						$p1 = $rotatedPlayers[$offset];
+						$p2 = $rotatedPlayers[$offset + 1];
+						$p3 = $rotatedPlayers[$offset + 2];
+						$p4 = $rotatedPlayers[$offset + 3];
+
+						MatchModel::create([
+							'tournament_id' => $tournament->id,
+							'round'          => $globalRound,
+							'court'          => $availableCourts[$m],
+							'player_a1_id'   => $p1,
+							'player_a2_id'   => $p4,
+							'player_b1_id'   => $p2,
+							'player_b2_id'   => $p3,
+							'is_finished'    => 0
+						]);
+						$globalRound++;
+					}
 				}
 			}
-        });
+		
+		});
 
-        return redirect()->route('tournament.index', ['code' => $code, 'view' => 'matches', 'round' => 1]);
-    }
+		return redirect()->route('tournament.index', ['code' => $code, 'view' => 'matches', 'round' => 1]);
+	}
 
 	//halaman utama turnament
     public function index(Request $request, $code)
