@@ -113,20 +113,29 @@
                             @csrf
                             
                             <div>
-                                <label for="max-players" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                                    Jumlah Pemain
-                                </label>
-                                <select id="max-players" name="max_players" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm lg:text-base bg-white font-medium text-slate-700 shadow-sm box-border">
-                                    <option value="4">4 Pemain</option>
-                                    <option value="8">8 Pemain</option>
-                                    <option value="12">12 Pemain</option>
-                                    <option value="16">16 Pemain</option>
-                                    <option value="20">20 Pemain</option>
-                                    <option value="24">24 Pemain</option>
-                                    <option value="28">28 Pemain</option>
-                                    <option value="32">32 Pemain</option>
-                                </select>
-                            </div>
+								<label for="max-players" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+									Jumlah Pemain
+								</label>
+								<input type="number" 
+									   id="max-players" 
+									   name="max_players" 
+									   min="4" 
+									   value="4" 
+									   class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm lg:text-base bg-white font-medium text-slate-700 shadow-sm box-border" 
+									   placeholder="Contoh: 5, 8, 10...">
+							</div>
+							
+							<div class="mt-4">
+								<label for="courts" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+									Jumlah Lapangan
+								</label>
+								<select id="courts" name="courts" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm lg:text-base bg-white font-medium text-slate-700 shadow-sm box-border">
+									<option value="1">1 Lapangan</option>
+									<option value="2">2 Lapangan</option>
+									<option value="3">3 Lapangan</option>
+									<option value="4">4 Lapangan</option>
+								</select>
+							</div>
 
                             <div>
                                 <label for="player-input" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
@@ -347,10 +356,10 @@
         });
 
 		document.getElementById('main-form').addEventListener('submit', function(e) {
-			const maxPlayers = parseInt(document.getElementById('max-players').value, 10);
+			const maxPlayers = parseInt(document.getElementById('max-players').value, 10) || 4;
 			if (localPlayers.length !== maxPlayers) {
 				e.preventDefault();
-				alert(`Minimal harus ada ${maxPlayers} pemain!`);
+				alert(`Minimal harus mendaftarkan ${maxPlayers} pemain untuk memulai turnamen!`);
 			}
 		});
     </script>
